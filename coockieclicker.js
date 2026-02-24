@@ -6,7 +6,7 @@ let game = {
     autoSpeed: 1000,
     prestige: 0,
     meditationCount: 0,
-    costs: { click: 10, auto: 50, speed: 100 }
+    costs: { click: 5, auto: 50, speed: 500 }
 };
 
 let musicOn = false;
@@ -223,7 +223,7 @@ function UpgPowderPerClick() {
     if (game.ki >= game.costs.click) {
         game.ki = 0;
         game.kiPerClick++;
-        game.costs.click = Math.round(game.costs.click * 2.5);
+        game.costs.click = Math.round(game.costs.click * 1.5);
         showMasterMessage(game.kiPerClick > MAX_TECHNIQUE ? "👑 Technique ultime maîtrisée !" : "Technique Apprise !");
         updateDisplay();
         saveGame();
@@ -260,7 +260,7 @@ function BuySpeed() {
         game.ki = 0;
         game.autoSpeed -= 150;
         game.meditationCount++;
-        game.costs.speed = Math.round(game.costs.speed * 4);
+        game.costs.speed = Math.round(game.costs.speed * 10);
         startAutoLoop();
         showMasterMessage(game.meditationCount >= MAX_MEDITATION ? "👑 Méditation ultime atteinte !" : "Méditation réussie : Esprit éclairci !");
         updateDisplay();
@@ -347,7 +347,7 @@ function applyPrestige() {
     game.autoCount = 0;
     game.autoSpeed = 1000;
     game.meditationCount = 0;
-    game.costs = { click: 10, auto: 50, speed: 100 };
+    game.costs = { click: 5, auto: 50, speed: 500 };
 
     autoCursors.forEach(c => c.remove());
     autoCursors = [];
