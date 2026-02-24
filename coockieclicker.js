@@ -61,6 +61,40 @@ function cheatPrestige() {
     applyPrestige();
 }
 
+function cheatMaxPrestige() {
+    game.prestige = MAX_PRESTIGE;
+    applyPrestige();
+    showMasterMessage("👑 RANG MAXIMUM ATTEINT !");
+}
+
+function cheatMaxTechnique() {
+    game.kiPerClick = MAX_TECHNIQUE;
+    game.costs.click = Math.round(5 * Math.pow(1.5, MAX_TECHNIQUE - 1));
+    updateDisplay();
+    saveGame();
+    showMasterMessage("👑 TECHNIQUES AU MAXIMUM !");
+}
+
+function cheatMaxEleves() {
+    const toAdd = MAX_ELEVES - game.autoCount;
+    for (let i = 0; i < toAdd; i++) createVisualCursor();
+    game.autoCount = MAX_ELEVES;
+    game.costs.auto = Math.round(50 * Math.pow(3, MAX_ELEVES));
+    updateDisplay();
+    saveGame();
+    showMasterMessage("👑 DOJO COMPLET !");
+}
+
+function cheatMaxMeditation() {
+    game.meditationCount = MAX_MEDITATION;
+    game.autoSpeed = 1000 - (MAX_MEDITATION * 150);
+    game.costs.speed = Math.round(500 * Math.pow(10, MAX_MEDITATION));
+    startAutoLoop();
+    updateDisplay();
+    saveGame();
+    showMasterMessage("👑 MÉDITATION ULTIME !");
+}
+
 // ================= INITIALISATION =================
 function init() {
     loadGame();
@@ -89,6 +123,9 @@ function init() {
 
     // 🎮 Init manette cachée
     initControllerUI();
+
+    // 🌌 Vérifier si ultra mode déjà débloqué
+    checkUltraMode();
 }
 
 // ================= MANETTE CACHÉE =================
@@ -227,6 +264,7 @@ function UpgPowderPerClick() {
         showMasterMessage(game.kiPerClick > MAX_TECHNIQUE ? "👑 Technique ultime maîtrisée !" : "Technique Apprise !");
         updateDisplay();
         saveGame();
+        checkUltraMode();
     }
 }
 
@@ -246,6 +284,7 @@ function BuyAuto() {
         showMasterMessage(game.autoCount >= MAX_ELEVES ? "👑 Dernier élève recruté !" : "Un nouvel élève rejoint le Dojo !");
         updateDisplay();
         saveGame();
+        checkUltraMode();
     }
 }
 
@@ -265,6 +304,7 @@ function BuySpeed() {
         showMasterMessage(game.meditationCount >= MAX_MEDITATION ? "👑 Méditation ultime atteinte !" : "Méditation réussie : Esprit éclairci !");
         updateDisplay();
         saveGame();
+        checkUltraMode();
     }
 }
 
@@ -367,6 +407,7 @@ function applyPrestige() {
 
     const rank = getRankData(game.prestige);
     showMasterMessage(`⚡ ${rank.titre} !`);
+    checkUltraMode();
 }
 
 function Prestige() {
@@ -477,7 +518,86 @@ function openPrestigePanel() {
     document.body.appendChild(panel);
 }
 
-// ================= RESET =================
+// ================= PUISSANCE ABSOLUE =================
+let ultraModeActive = false;
+let ultraInterval = null;
+
+function checkUltraMode() {
+    if (
+        game.prestige >= MAX_PRESTIGE &&
+        game.kiPerClick >= MAX_TECHNIQUE &&
+        game.autoCount >= MAX_ELEVES &&
+        game.meditationCount >= MAX_MEDITATION &&
+        !ultraModeActive
+    ) {
+        activateUltraMode();
+    }
+}
+
+function activateUltraMode() {
+    ultraModeActive = true;
+
+    showMasterMessage("🌌 PUISSANCE ABSOLUE DÉBLOQUÉE !");
+
+    // Flash épique
+    const flash = document.createElement("div");
+    flash.className = "reset-flash";
+    flash.style.background = "white";
+    document.body.appendChild(flash);
+    setTimeout(() => flash.remove(), 1200);
+
+    // Ki par clic devient astronomique
+    game.kiPerClick = 999999999999;
+
+    // Auto-click ultra rapide : toutes les 50ms
+    if (ultraInterval) clearInterval(ultraInterval);
+    ultraInterval = setInterval(() => {
+        game.ki += 999999999999 * MAX_ELEVES * (1 + game.prestige);
+        updateDisplay();
+    }, 50);
+
+    // Aura visuelle sur l'image
+    const btn = document.getElementById("aff_click_button");
+    if (btn) {
+        btn.style.animation = "none";
+        btn.style.animation = "ultraPulse 0.5s infinite ease-in-out";
+        btn.style.boxShadow = "0 0 80px #fff, 0 0 160px #fff, 0 0 300px #ffffff88";
+    }
+
+    // Texte infini sur le compteur
+    const kiEl = document.getElementById("dis_powder");
+    if (kiEl) {
+        kiEl.style.color = "#ffffff";
+        kiEl.style.textShadow = "0 0 30px #fff, 0 0 60px #fff";
+        kiEl.style.fontSize = "2.5rem";
+    }
+
+    // Message permanent
+    const banner = document.createElement("div");
+    banner.id = "ultra-banner";
+    banner.innerHTML = "🌌 PUISSANCE ABSOLUE 🌌";
+    banner.style.cssText = `
+        position: fixed;
+        top: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        background: linear-gradient(90deg, #000, #fff, #000);
+        background-size: 200%;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        font-size: 1.2rem;
+        font-weight: bold;
+        letter-spacing: 3px;
+        z-index: 500;
+        animation: ultraBanner 1.5s infinite linear;
+        white-space: nowrap;
+    `;
+    document.body.appendChild(banner);
+
+    startAutoLoop(); // relancer avec les nouveaux paramètres
+    updateDisplay();
+}
+
 function ResetGame() {
     if (!confirm("Voulez-vous vraiment effacer TOUTE votre progression ?")) return;
     localStorage.clear();
