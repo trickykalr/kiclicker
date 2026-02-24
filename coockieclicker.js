@@ -216,17 +216,22 @@ function Click(e) {
 }
 
 function UpgPowderPerClick() {
+    if (game.kiPerClick > MAX_TECHNIQUE) {
+        showMasterMessage("👑 Techniques au maximum !");
+        return;
+    }
     if (game.ki >= game.costs.click) {
         game.ki = 0;
         game.kiPerClick++;
         game.costs.click = Math.round(game.costs.click * 2.5);
-        showMasterMessage("Technique Apprise !");
+        showMasterMessage(game.kiPerClick > MAX_TECHNIQUE ? "👑 Technique ultime maîtrisée !" : "Technique Apprise !");
         updateDisplay();
         saveGame();
     }
 }
 
 const MAX_ELEVES = 20;
+const MAX_TECHNIQUE = 100;
 
 function BuyAuto() {
     if (game.autoCount >= MAX_ELEVES) {
@@ -244,7 +249,7 @@ function BuyAuto() {
     }
 }
 
-const MAX_MEDITATION = 10;
+const MAX_MEDITATION = 5;
 
 function BuySpeed() {
     if (game.meditationCount >= MAX_MEDITATION) {
@@ -620,8 +625,13 @@ function updateDisplay() {
     if (dAuto)  dAuto.textContent  = "Élèves : " + game.autoCount + " | Rang : " + game.prestige;
 
     if (bClick) {
-        bClick.disabled  = game.ki < game.costs.click;
-        bClick.innerHTML = `Technique <br><span>(${game.costs.click} Ki)</span>`;
+        if (game.kiPerClick > MAX_TECHNIQUE) {
+            bClick.disabled  = true;
+            bClick.innerHTML = `👑 Technique max<br><span>(100/100)</span>`;
+        } else {
+            bClick.disabled  = game.ki < game.costs.click;
+            bClick.innerHTML = `Technique <br><span>(${game.costs.click} Ki) ${game.kiPerClick}/${MAX_TECHNIQUE}</span>`;
+        }
     }
     if (bAuto) {
         if (game.autoCount >= MAX_ELEVES) {
@@ -635,7 +645,7 @@ function updateDisplay() {
     if (bSpeed) {
         if (game.meditationCount >= MAX_MEDITATION) {
             bSpeed.disabled  = true;
-            bSpeed.innerHTML = `👑 Esprit au max<br><span>(10/10 méditations)</span>`;
+            bSpeed.innerHTML = `👑 Esprit au max<br><span>(5/5 méditations)</span>`;
         } else {
             bSpeed.disabled  = game.ki < game.costs.speed;
             bSpeed.innerHTML = `Méditation <br><span>(${game.costs.speed} Ki) ${game.meditationCount}/${MAX_MEDITATION}</span>`;
