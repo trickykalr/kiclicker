@@ -94,8 +94,7 @@ button:not(:disabled):hover { background: #333; transform: translateY(-3px); bor
     to { transform: translateY(-100px); opacity: 0; }
 }
 
-/* ===== ÉLÈVES / CURSEURS GIF QUI TOURNENT ===== */
-/* position: fixed pour se caler sur les coordonnées viewport */
+/* CURSEURS GIF */
 .auto_cursor {
     position: fixed;
     width: 50px;
@@ -153,24 +152,118 @@ button:not(:disabled):hover { background: #333; transform: translateY(-3px); bor
     100% { opacity: 0; }
 }
 
-/* ===== MANETTE ===== */
-#controller {
+/* ===== MANETTE CACHÉE ===== */
+
+/* Bouton toggle discret */
+#controller-toggle {
     position: fixed;
-    bottom: 20px;
-    right: 20px;
-    background: rgba(20, 20, 20, 0.9);
+    bottom: 16px;
+    right: 16px;
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    background: rgba(20, 20, 20, 0.85);
     border: 2px solid #444;
-    padding: 20px;
-    border-radius: 15px;
+    color: white;
+    font-size: 1.4rem;
+    cursor: pointer;
+    z-index: 200;
     display: flex;
-    gap: 20px;
-    opacity: 0.7;
-    transition: opacity 0.3s;
-    z-index: 100;
-    box-shadow: 0 0 20px rgba(0,0,0,0.5);
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 0 12px rgba(0,0,0,0.6);
+    transition: border-color 0.3s, box-shadow 0.3s;
+    padding: 0;
 }
 
-#controller:hover { opacity: 1; }
+#controller-toggle:hover {
+    border-color: cyan;
+    box-shadow: 0 0 16px rgba(0,255,255,0.4);
+    transform: none;
+    background: rgba(20, 20, 20, 0.85);
+}
+
+/* Overlay */
+#controller-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.3);
+    z-index: 140;
+}
+
+#controller-overlay.visible {
+    display: block;
+}
+
+/* Manette — cachée par défaut */
+#controller {
+    position: fixed;
+    bottom: 0;
+    right: 0;
+    left: 0;
+    width: 100%;
+    border-radius: 20px 20px 0 0;
+    border: 2px solid #444;
+    border-bottom: none;
+    background: rgba(15, 15, 15, 0.97);
+    padding: 22px 20px 18px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 30px;
+    z-index: 150;
+    opacity: 0;
+    transform: translateY(100%);
+    transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1), opacity 0.3s ease;
+    pointer-events: none;
+    box-shadow: 0 -4px 30px rgba(0,0,0,0.6);
+}
+
+#controller.visible {
+    opacity: 1;
+    transform: translateY(0);
+    pointer-events: all;
+}
+
+/* Poignée swipe */
+#controller-handle {
+    position: absolute;
+    top: 8px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 40px;
+    height: 4px;
+    background: #555;
+    border-radius: 2px;
+    cursor: grab;
+}
+
+/* Bouton fermer */
+#controller-close {
+    position: absolute;
+    top: 8px;
+    right: 12px;
+    background: none !important;
+    border: none !important;
+    color: #666;
+    font-size: 1rem;
+    cursor: pointer;
+    padding: 4px 8px;
+    line-height: 1;
+    transition: color 0.2s;
+    width: auto !important;
+    height: auto !important;
+    border-radius: 4px;
+    opacity: 1 !important;
+}
+
+#controller-close:hover {
+    color: #ff4444 !important;
+    background: none !important;
+    transform: none !important;
+    border-color: transparent !important;
+}
 
 .d-pad, .action-btns, .system-btns {
     display: flex;
@@ -200,10 +293,32 @@ button:not(:disabled):hover { background: #333; transform: translateY(-3px); bor
     border-color: cyan;
 }
 
-/* Overrides spécifiques pour éviter la collision avec le style général "button" */
 .ctrl-btn { width: 40px; height: 40px; margin: 2px; border-radius: 6px; }
-.round-btn { width: 50px; height: 50px; border-radius: 50% !important; background: #900 !important; font-size: 1.2rem; margin: 5px; }
+.round-btn { width: 50px !important; height: 50px !important; border-radius: 50% !important; background: #900 !important; font-size: 1.2rem; margin: 5px; }
 .rect-btn { width: 80px; height: 30px; margin-top: 10px; background: #333; font-size: 0.8rem; }
+
+/* Desktop : coin bas-droit comme avant */
+@media (min-width: 769px) {
+    #controller {
+        bottom: 20px;
+        right: 20px;
+        left: auto;
+        width: auto;
+        border-radius: 15px;
+        border: 2px solid #444;
+        padding: 20px;
+        gap: 20px;
+        transform: translateY(calc(100% + 30px));
+    }
+
+    #controller-toggle {
+        bottom: 20px;
+        right: 20px;
+    }
+
+    #controller-handle { display: none; }
+    #controller-overlay { display: none !important; }
+}
 
 /* ===== PANEL PRESTIGE ===== */
 #prestigePanel {
@@ -283,6 +398,7 @@ button:not(:disabled):hover { background: #333; transform: translateY(-3px); bor
     background: rgba(255,255,255,0.03);
 }
 
+/* ===== PANEL ADMIN ===== */
 #adminPanel {
     position: fixed;
     top: 50%;
@@ -312,51 +428,28 @@ button:not(:disabled):hover { background: #333; transform: translateY(-3px); bor
 #adminPanel button:hover {
     background: #666;
     transform: none;
-
 }
 
 /* ====================================================
-   📱 RESPONSIVE MOBILE — Coller à la FIN de coockieclicker.css
+   📱 RESPONSIVE MOBILE
    ==================================================== */
+input, button, select, textarea { font-size: 16px !important; }
 
-/* ---- Empêche le zoom involontaire sur iOS ---- */
-input, button, select, textarea {
-    font-size: 16px !important;
-}
-
-/* ====================================================
-   TABLETTE (≤ 768px)
-   ==================================================== */
 @media (max-width: 768px) {
-
     body {
-        overflow-y: auto;       /* scroll vertical autorisé */
+        overflow-y: auto;
         overflow-x: hidden;
         align-items: flex-start;
-        padding-bottom: 160px; /* place pour la manette */
+        padding-bottom: 100px;
     }
 
-    #game-container {
-        padding: 16px 10px;
-        width: 100%;
-    }
+    #game-container { padding: 16px 10px; width: 100%; }
 
-    /* Compteur Ki */
-    .ki-counter {
-        font-size: 2rem;
-    }
+    .ki-counter { font-size: 2rem; }
 
-    /* Image principale */
-    #aff_click_button {
-        width: 260px;
-        height: 165px;
-    }
+    #aff_click_button { width: 260px; height: 165px; }
+    .image-wrapper { margin: 20px auto; }
 
-    .image-wrapper {
-        margin: 20px auto;
-    }
-
-    /* Boutons upgrades en grille */
     #upgrades {
         flex-wrap: wrap;
         gap: 10px;
@@ -370,7 +463,6 @@ input, button, select, textarea {
         font-size: 0.85rem;
     }
 
-    /* Menu bas */
     .menu-bas {
         flex-wrap: wrap;
         gap: 10px;
@@ -385,48 +477,8 @@ input, button, select, textarea {
         font-size: 0.85rem;
     }
 
-    /* Volume slider */
-    .menu-bas div {
-        flex: 1 1 100%;
-        justify-content: center;
-    }
+    .menu-bas div { flex: 1 1 100%; justify-content: center; }
 
-    /* Manette : en bas, pleine largeur */
-    #controller {
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 100%;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        justify-content: center;
-        padding: 10px 20px;
-        gap: 30px;
-        opacity: 1;
-    }
-
-    .ctrl-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
-    }
-
-    .round-btn {
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 1rem;
-        margin: 3px;
-    }
-
-    .rect-btn {
-        width: 70px;
-        height: 34px;
-        font-size: 0.8rem;
-    }
-
-    /* Panels prestige / admin : plein écran sur mobile */
     #prestigePanel,
     #adminPanel {
         width: 92vw;
@@ -435,82 +487,32 @@ input, button, select, textarea {
         max-height: 85vh;
         overflow-y: auto;
         padding: 18px 14px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
     }
 
-    .pp-history {
-        max-height: 120px;
-    }
+    .pp-history { max-height: 120px; }
 
-    /* Message central */
     .master-message {
         font-size: 1.1rem;
         padding: 14px 20px;
         width: 85vw;
         text-align: center;
     }
+
+    .auto_cursor { width: 36px; height: 36px; }
 }
 
-/* ====================================================
-   SMARTPHONE (≤ 430px)
-   ==================================================== */
 @media (max-width: 430px) {
+    .ki-counter { font-size: 1.6rem; }
+    #dis_powder_per_click, #dis_auto { font-size: 0.8rem; }
 
-    .ki-counter {
-        font-size: 1.6rem;
-    }
+    #aff_click_button { width: 200px; height: 126px; }
+    .image-wrapper { margin: 14px auto; }
 
-    #dis_powder_per_click,
-    #dis_auto {
-        font-size: 0.8rem;
-    }
+    #upgrades { flex-direction: column; align-items: center; }
+    #upgrades button { width: 90%; min-width: unset; flex: none; padding: 14px; font-size: 0.9rem; }
 
-    /* Image encore plus petite */
-    #aff_click_button {
-        width: 200px;
-        height: 126px;
-    }
+    .menu-bas { flex-direction: column; align-items: center; }
+    .menu-bas button { width: 90%; flex: none; padding: 14px; }
 
-    .image-wrapper {
-        margin: 14px auto;
-    }
-
-    /* Boutons upgrades : 1 par ligne */
-    #upgrades {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #upgrades button {
-        width: 90%;
-        min-width: unset;
-        flex: none;
-        padding: 14px;
-        font-size: 0.9rem;
-    }
-
-    /* Menu bas : vertical */
-    .menu-bas {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .menu-bas button {
-        width: 90%;
-        flex: none;
-        padding: 14px;
-    }
-
-    /* Prestige panel */
-    .pp-header {
-        font-size: 1rem;
-    }
-
-    /* Curseurs orbite réduite sur mobile — à ajuster dans le JS */
-    .auto_cursor {
-        width: 36px;
-        height: 36px;
-    }
+    .pp-header { font-size: 1rem; }
 }
