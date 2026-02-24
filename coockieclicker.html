@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ki Clicker - Master Edition</title>
+    <link rel="stylesheet" href="coockieclicker.css">
+    <script defer src="coockieclicker.js"></script>
+</head>
+<body>
+    <canvas id="stars"></canvas>
+
+    <div id="game-container">
+        <div id="stats">
+            <div id="dis_powder" class="ki-counter">0 Ki</div>
+            <div id="dis_powder_per_click">Force : +1/coup</div>
+            <div id="dis_auto">Élèves : 0 | Rang Prestige : 0</div>
+        </div>
+
+        <div class="image-wrapper">
+            <img id="aff_click_button" onclick="Click(event)" src="wallpaperflare.com_wallpaper2.jpg" alt="Entraînement">
+        </div>
+
+        <div id="upgrades">
+            <button id="upg_powder_per_click" onclick="UpgPowderPerClick()">
+                Technique <br><span id="cost_click">(10 Ki)</span>
+            </button>
+            <button id="upg_autoclick" onclick="BuyAuto()">
+                Recruter Élève <br><span id="cost_auto">(50 Ki)</span>
+            </button>
+            <button id="upg_autospeed" onclick="BuySpeed()">
+                Méditation <br><span id="cost_speed">(100 Ki)</span>
+            </button>
+        </div>
+
+        <div class="menu-bas">
+            <button id="prestigeBtn" onclick="openPrestigePanel()" style="background: linear-gradient(to bottom, #4b0082, #000); color: cyan; border: 2px solid cyan;">
+                ⚡ ÉVEIL SPIRITUEL
+            </button>
+            <button id="musicBtn" onclick="ToggleMusic()">🔴 Musique OFF</button>
+            <div style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;">
+                <span style="color:#aaa;font-size:0.85rem;">🔊</span>
+                <input type="range" id="volumeSlider" min="0" max="100" value="30"
+                    oninput="setVolume(this.value)"
+                    style="width:80px;accent-color:#00cc00;cursor:pointer;vertical-align:middle;">
+                <span id="volumeLabel" style="color:#aaa;font-size:0.75rem;min-width:28px;">30%</span>
+            </div>
+            <button onclick="ResetGame()" style="background: #a00; color: white;">
+                Réinitialiser le Dojo
+            </button>
+        </div>
+    </div>
+
+    <!-- MANETTE -->
+    <div id="controller">
+        <div class="d-pad">
+            <button class="ctrl-btn" onclick="handleKonami('ArrowUp')">↑</button>
+            <div class="d-pad-row">
+                <button class="ctrl-btn" onclick="handleKonami('ArrowLeft')">←</button>
+                <button class="ctrl-btn" onclick="handleKonami('ArrowRight')">→</button>
+            </div>
+            <button class="ctrl-btn" onclick="handleKonami('ArrowDown')">↓</button>
+        </div>
+        <div class="action-btns">
+            <button class="round-btn" onclick="handleKonami('b')">B</button>
+            <button class="round-btn" onclick="handleKonami('a')">A</button>
+        </div>
+        <div class="system-btns">
+            <button class="rect-btn" onclick="handleKonami('Enter')">START</button>
+        </div>
+    </div>
+
+    <!-- PANEL ADMIN -->
+    <div id="adminPanel" style="display:none;">
+        <h3>⛩️ Menu des Sages (Admin)</h3>
+        <button onclick="cheatKi()">+1 000 000 Ki</button>
+        <button onclick="cheatPrestige()">+1 Rang Prestige</button>
+        <button onclick="closeAdmin()">Fermer</button>
+    </div>
+
+    <audio id="bg_music" src="Tapion.mp3" loop></audio>
+</body>
+</html>
