@@ -9,18 +9,15 @@
 </head>
 <body>
     <canvas id="stars"></canvas>
-
     <div id="game-container">
         <div id="stats">
             <div id="dis_powder" class="ki-counter">0 Ki</div>
             <div id="dis_powder_per_click">Force : +1/coup</div>
             <div id="dis_auto">Élèves : 0 | Rang Prestige : 0</div>
         </div>
-
         <div class="image-wrapper">
             <img id="aff_click_button" onclick="Click(event)" src="wallpaperflare.com_wallpaper2.jpg" alt="Entraînement">
         </div>
-
         <div id="upgrades">
             <button id="upg_powder_per_click" onclick="UpgPowderPerClick()">
                 Technique <br><span id="cost_click">(10 Ki)</span>
@@ -32,7 +29,6 @@
                 Méditation <br><span id="cost_speed">(100 Ki)</span>
             </button>
         </div>
-
         <div class="menu-bas">
             <button id="prestigeBtn" onclick="openPrestigePanel()" style="background: linear-gradient(to bottom, #4b0082, #000); color: cyan; border: 2px solid cyan;">
                 ⚡ ÉVEIL SPIRITUEL
@@ -51,8 +47,13 @@
         </div>
     </div>
 
+    <!-- OVERLAY manette -->
+    <div id="controller-overlay"></div>
+
     <!-- MANETTE -->
     <div id="controller">
+        <div id="controller-handle"></div>
+        <button id="controller-close" onclick="closeController()">✕</button>
         <div class="d-pad">
             <button class="ctrl-btn" onclick="handleKonami('ArrowUp')">↑</button>
             <div class="d-pad-row">
@@ -70,6 +71,9 @@
         </div>
     </div>
 
+    <!-- BOUTON TOGGLE MANETTE -->
+    <button id="controller-toggle" onclick="toggleController()" title="Manette Konami">🎮</button>
+
     <!-- PANEL ADMIN -->
     <div id="adminPanel" style="display:none;">
         <h3>⛩️ Menu des Sages (Admin)</h3>
@@ -77,8 +81,6 @@
         <button onclick="cheatPrestige()">+1 Rang Prestige</button>
         <button onclick="closeAdmin()">Fermer</button>
     </div>
-
     <audio id="bg_music" src="Tapion.mp3" loop></audio>
 </body>
-
-</html> 
+</html>
