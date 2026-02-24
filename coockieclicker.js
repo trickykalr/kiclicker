@@ -498,204 +498,41 @@ function createVisualCursor() {
     autoCursors.push(img);
 }
 
-/* ====================================================
-   📱 RESPONSIVE MOBILE — Coller à la FIN de coockieclicker.css
-   ==================================================== */
+// ====================================================
+// 📱 PATCH MOBILE — Remplacer la fonction animateCursors()
+// dans coockieclicker.js par celle-ci
+// ====================================================
 
-/* ---- Empêche le zoom involontaire sur iOS ---- */
-input, button, select, textarea {
-    font-size: 16px !important;
-}
+function animateCursors() {
+    let angle = 0;
+    function loop() {
+        angle += 0.02;
+        const button = document.getElementById("aff_click_button");
+        if (button) {
+            const rect = button.getBoundingClientRect();
+            const centerX = rect.left + rect.width / 2 + window.scrollX;
+            const centerY = rect.top + rect.height / 2 + window.scrollY;
 
-/* ====================================================
-   TABLETTE (≤ 768px)
-   ==================================================== */
-@media (max-width: 768px) {
+            // 📱 Orbite réduite sur mobile
+            const isMobile = window.innerWidth <= 768;
+            const orbitRayonX = isMobile ? 130 : 230;
+            const orbitRayonY = isMobile ? 80  : 140;
 
-    body {
-        overflow-y: auto;       /* scroll vertical autorisé */
-        overflow-x: hidden;
-        align-items: flex-start;
-        padding-bottom: 160px; /* place pour la manette */
+            autoCursors.forEach((c, i) => {
+                const curAngle = angle + (i / autoCursors.length) * Math.PI * 2;
+                const orbitX = Math.cos(curAngle) * orbitRayonX;
+                const orbitY = Math.sin(curAngle) * orbitRayonY;
+                c.style.left = (centerX + orbitX - 18) + "px";
+                c.style.top  = (centerY + orbitY - 18) + "px";
+                c.style.transform = orbitX > 0 ? "scaleX(-1)" : "scaleX(1)";
+                const scale = 0.85 + 0.3 * ((Math.sin(curAngle) + 1) / 2);
+                c.style.transform += ` scale(${scale.toFixed(2)})`;
+                c.style.opacity = (0.6 + 0.4 * ((Math.sin(curAngle) + 1) / 2)).toFixed(2);
+            });
+        }
+        requestAnimationFrame(loop);
     }
-
-    #game-container {
-        padding: 16px 10px;
-        width: 100%;
-    }
-
-    /* Compteur Ki */
-    .ki-counter {
-        font-size: 2rem;
-    }
-
-    /* Image principale */
-    #aff_click_button {
-        width: 260px;
-        height: 165px;
-    }
-
-    .image-wrapper {
-        margin: 20px auto;
-    }
-
-    /* Boutons upgrades en grille */
-    #upgrades {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 0 10px;
-    }
-
-    #upgrades button {
-        flex: 1 1 120px;
-        min-width: 100px;
-        padding: 12px 10px;
-        font-size: 0.85rem;
-    }
-
-    /* Menu bas */
-    .menu-bas {
-        flex-wrap: wrap;
-        gap: 10px;
-        padding: 0 10px;
-        justify-content: center;
-    }
-
-    .menu-bas button {
-        flex: 1 1 130px;
-        min-width: 120px;
-        padding: 12px 8px;
-        font-size: 0.85rem;
-    }
-
-    /* Volume slider */
-    .menu-bas div {
-        flex: 1 1 100%;
-        justify-content: center;
-    }
-
-    /* Manette : en bas, pleine largeur */
-    #controller {
-        bottom: 0;
-        right: 0;
-        left: 0;
-        width: 100%;
-        border-radius: 0;
-        border-left: none;
-        border-right: none;
-        border-bottom: none;
-        justify-content: center;
-        padding: 10px 20px;
-        gap: 30px;
-        opacity: 1;
-    }
-
-    .ctrl-btn {
-        width: 44px;
-        height: 44px;
-        font-size: 1.1rem;
-    }
-
-    .round-btn {
-        width: 44px !important;
-        height: 44px !important;
-        font-size: 1rem;
-        margin: 3px;
-    }
-
-    .rect-btn {
-        width: 70px;
-        height: 34px;
-        font-size: 0.8rem;
-    }
-
-    /* Panels prestige / admin : plein écran sur mobile */
-    #prestigePanel,
-    #adminPanel {
-        width: 92vw;
-        max-width: 92vw;
-        min-width: unset;
-        max-height: 85vh;
-        overflow-y: auto;
-        padding: 18px 14px;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-    }
-
-    .pp-history {
-        max-height: 120px;
-    }
-
-    /* Message central */
-    .master-message {
-        font-size: 1.1rem;
-        padding: 14px 20px;
-        width: 85vw;
-        text-align: center;
-    }
-}
-
-/* ====================================================
-   SMARTPHONE (≤ 430px)
-   ==================================================== */
-@media (max-width: 430px) {
-
-    .ki-counter {
-        font-size: 1.6rem;
-    }
-
-    #dis_powder_per_click,
-    #dis_auto {
-        font-size: 0.8rem;
-    }
-
-    /* Image encore plus petite */
-    #aff_click_button {
-        width: 200px;
-        height: 126px;
-    }
-
-    .image-wrapper {
-        margin: 14px auto;
-    }
-
-    /* Boutons upgrades : 1 par ligne */
-    #upgrades {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    #upgrades button {
-        width: 90%;
-        min-width: unset;
-        flex: none;
-        padding: 14px;
-        font-size: 0.9rem;
-    }
-
-    /* Menu bas : vertical */
-    .menu-bas {
-        flex-direction: column;
-        align-items: center;
-    }
-
-    .menu-bas button {
-        width: 90%;
-        flex: none;
-        padding: 14px;
-    }
-
-    /* Prestige panel */
-    .pp-header {
-        font-size: 1rem;
-    }
-
-    /* Curseurs orbite réduite sur mobile — à ajuster dans le JS */
-    .auto_cursor {
-        width: 36px;
-        height: 36px;
-    }
+    loop();
 }
 
 function animateStars() {
@@ -811,3 +648,4 @@ function createParticle(x, y, txt) {
 // ================= DÉMARRAGE =================
 
 window.onload = init;
+
