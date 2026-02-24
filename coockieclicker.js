@@ -75,7 +75,6 @@ function init() {
         document.getElementById("adminPanel").style.display = "block";
     }
 
-    // Restaurer l'état musique après prestige (sans reload)
     const savedMusicOn = localStorage.getItem("musicOn");
     if (savedMusicOn === "1") {
         musicOn = true;
@@ -87,6 +86,74 @@ function init() {
         }
         updateMusicBtn();
     }
+
+    // 🎮 Init manette cachée
+    initControllerUI();
+}
+
+// ================= MANETTE CACHÉE =================
+function openController() {
+    document.getElementById("controller").classList.add("visible");
+    const overlay = document.getElementById("controller-overlay");
+    if (overlay) overlay.classList.add("visible");
+    const toggle = document.getElementById("controller-toggle");
+    if (toggle) {
+        toggle.style.borderColor = "cyan";
+        toggle.style.boxShadow = "0 0 16px rgba(0,255,255,0.5)";
+    }
+}
+
+function closeController() {
+    document.getElementById("controller").classList.remove("visible");
+    const overlay = document.getElementById("controller-overlay");
+    if (overlay) overlay.classList.remove("visible");
+    const toggle = document.getElementById("controller-toggle");
+    if (toggle) {
+        toggle.style.borderColor = "#444";
+        toggle.style.boxShadow = "";
+    }
+}
+
+function toggleController() {
+    const ctrl = document.getElementById("controller");
+    ctrl.classList.contains("visible") ? closeController() : openController();
+}
+
+function initControllerUI() {
+    const ctrl = document.getElementById("controller");
+    let startY = 0;
+    let isDragging = false;
+
+    // Swipe vers le bas pour fermer
+    ctrl.addEventListener("touchstart", (e) => {
+        startY = e.touches[0].clientY;
+        isDragging = true;
+    }, { passive: true });
+
+    ctrl.addEventListener("touchmove", (e) => {
+        if (!isDragging) return;
+        const dy = e.touches[0].clientY - startY;
+        if (dy > 0) {
+            ctrl.style.transition = "none";
+            ctrl.style.transform = `translateY(${dy}px)`;
+        }
+    }, { passive: true });
+
+    ctrl.addEventListener("touchend", (e) => {
+        isDragging = false;
+        const dy = e.changedTouches[0].clientY - startY;
+        ctrl.style.transition = "";
+        if (dy > 80) {
+            ctrl.style.transform = "";
+            closeController();
+        } else {
+            ctrl.style.transform = "";
+        }
+    }, { passive: true });
+
+    // Fermer en cliquant l'overlay
+    const overlay = document.getElementById("controller-overlay");
+    if (overlay) overlay.addEventListener("click", closeController);
 }
 
 // ================= MUSIQUE =================
@@ -270,7 +337,6 @@ function applyRankVisuals() {
 
 // ================= PRESTIGE (SANS RELOAD) =================
 function applyPrestige() {
-    // Réinitialiser les stats du jeu
     game.ki = 0;
     game.kiPerClick = 1;
     game.autoCount = 0;
@@ -278,21 +344,17 @@ function applyPrestige() {
     game.meditationCount = 0;
     game.costs = { click: 10, auto: 50, speed: 100 };
 
-    // Supprimer les curseurs visuels existants
     autoCursors.forEach(c => c.remove());
     autoCursors = [];
 
-    // Sauvegarder & appliquer les nouveaux visuels
     saveGame();
     applyRankVisuals();
     updateDisplay();
     startAutoLoop();
 
-    // Fermer le panel prestige si ouvert
     const panel = document.getElementById("prestigePanel");
     if (panel) panel.remove();
 
-    // Flash d'animation prestige
     const flash = document.createElement("div");
     flash.className = "reset-flash";
     document.body.appendChild(flash);
@@ -310,7 +372,7 @@ function Prestige() {
     const cost = getPrestigeCost();
     if (game.ki >= cost) {
         game.prestige++;
-        applyPrestige(); // ← Plus de window.location.reload() !
+        applyPrestige();
     } else {
         showMasterMessage("Ki insuffisant ! Besoin : " + getPrestigeCost().toLocaleString());
     }
@@ -450,58 +512,36 @@ function loadGame() {
 
 // ================= VISUELS CURSEURS GIF =================
 const CURSOR_GIFS = [
-    // 🔴 RYU
-    "https://media.giphy.com/media/Tki7sWHDoepb2/giphy.gif",       // Ryu pixel SF2
-    "https://media.giphy.com/media/wEeUz0u91oLKO6LRfu/giphy.gif",  // Ryu Hadoken SF6
-    "https://media.giphy.com/media/ohorRePDbDefh0z8bX/giphy.gif",  // Ryu SF6 Capcom
-    "https://media.giphy.com/media/8WqB2tmGf6Pny/giphy.gif",       // Ryu marche pixel
-    "https://media.giphy.com/media/B0yg6yWnfVpEA/giphy.gif",       // Ryu pixel SNES
-    "https://media.giphy.com/media/8h3oYPjGATcOKGATMy/giphy.gif",  // Ryu SF6 flex
-
-    // 🔵 CHUN-LI
-    "https://media.giphy.com/media/WLq5xLSELqBhK/giphy.gif",       // Chun-Li sprite pixel
-    "https://media.giphy.com/media/lH0au8hGm4iHEfAdZP/giphy.gif",  // Chun-Li SF6 échauffement
-    "https://media.giphy.com/media/PnDvC2sOfqK0jqp2Hs/giphy.gif",  // Chun-Li kicks chibi
-    "https://media.giphy.com/media/Z1UPEUtu4y4Rt9TvDG/giphy.gif",  // Chun-Li SF6 coup
-    "https://media.giphy.com/media/3oKGzjW7CIpfkZITsI/giphy.gif",  // Chun-Li vs pixel
-    "https://media.giphy.com/media/1xV69JQQ7Ibl3Pzg5C/giphy.gif",  // Chun-Li SF6 victoire
-
-    // 🟡 KEN
-    "https://media.giphy.com/media/xTiTnm91V79U92CeuQ/giphy.gif",  // Ken Shoryuken
-    "https://media.giphy.com/media/fQKxhY0MYcU2WTTkac/giphy.gif",  // Ken feu SF6
-    "https://media.giphy.com/media/PeLjyjkmRpowbuqHJj/giphy.gif",  // Ken retro pixel
-    "https://media.giphy.com/media/IcQJikabvsCtUuATQ6/giphy.gif",  // Ken SF6 attaque
-    "https://media.giphy.com/media/1lrNuuRHrgKa62JsTW/giphy.gif",  // Ken SF6 combat
-    "https://media.giphy.com/media/5XgvRXYm3UJEN51rqV/giphy.gif",  // Ken chibi Gem Fighter
-
-    // 🟣 AUTRES
-    "https://media.giphy.com/media/GRkzpzhh4vpKBHHQtZ/giphy.gif",  // Fireball SF6
-    "https://media.giphy.com/media/t6XGC1rtyZLEfuwSLE/giphy.gif",  // Arcade SF classique
+    "https://media.giphy.com/media/Tki7sWHDoepb2/giphy.gif",
+    "https://media.giphy.com/media/wEeUz0u91oLKO6LRfu/giphy.gif",
+    "https://media.giphy.com/media/ohorRePDbDefh0z8bX/giphy.gif",
+    "https://media.giphy.com/media/8WqB2tmGf6Pny/giphy.gif",
+    "https://media.giphy.com/media/B0yg6yWnfVpEA/giphy.gif",
+    "https://media.giphy.com/media/8h3oYPjGATcOKGATMy/giphy.gif",
+    "https://media.giphy.com/media/WLq5xLSELqBhK/giphy.gif",
+    "https://media.giphy.com/media/lH0au8hGm4iHEfAdZP/giphy.gif",
+    "https://media.giphy.com/media/PnDvC2sOfqK0jqp2Hs/giphy.gif",
+    "https://media.giphy.com/media/Z1UPEUtu4y4Rt9TvDG/giphy.gif",
+    "https://media.giphy.com/media/3oKGzjW7CIpfkZITsI/giphy.gif",
+    "https://media.giphy.com/media/1xV69JQQ7Ibl3Pzg5C/giphy.gif",
+    "https://media.giphy.com/media/xTiTnm91V79U92CeuQ/giphy.gif",
+    "https://media.giphy.com/media/fQKxhY0MYcU2WTTkac/giphy.gif",
+    "https://media.giphy.com/media/PeLjyjkmRpowbuqHJj/giphy.gif",
+    "https://media.giphy.com/media/IcQJikabvsCtUuATQ6/giphy.gif",
+    "https://media.giphy.com/media/1lrNuuRHrgKa62JsTW/giphy.gif",
+    "https://media.giphy.com/media/5XgvRXYm3UJEN51rqV/giphy.gif",
+    "https://media.giphy.com/media/GRkzpzhh4vpKBHHQtZ/giphy.gif",
+    "https://media.giphy.com/media/t6XGC1rtyZLEfuwSLE/giphy.gif",
 ];
-
 
 function createVisualCursor() {
     let img = document.createElement("img");
-
-    // Choisir un GIF en rotation dans la liste
     const gifIndex = autoCursors.length % CURSOR_GIFS.length;
     img.src = CURSOR_GIFS[gifIndex];
-
-    // Fallback si le fichier local n'existe pas
-    img.onerror = function() {
-        this.src = FALLBACK_GIF;
-        this.onerror = null;
-    };
-
     img.className = "auto_cursor";
     document.body.appendChild(img);
     autoCursors.push(img);
 }
-
-// ====================================================
-// 📱 PATCH MOBILE — Remplacer la fonction animateCursors()
-// dans coockieclicker.js par celle-ci
-// ====================================================
 
 function animateCursors() {
     let angle = 0;
@@ -513,7 +553,7 @@ function animateCursors() {
             const centerX = rect.left + rect.width / 2 + window.scrollX;
             const centerY = rect.top + rect.height / 2 + window.scrollY;
 
-            // 📱 Orbite réduite sur mobile
+            // Orbite réduite sur mobile
             const isMobile = window.innerWidth <= 768;
             const orbitRayonX = isMobile ? 130 : 230;
             const orbitRayonY = isMobile ? 80  : 140;
@@ -646,6 +686,4 @@ function createParticle(x, y, txt) {
 }
 
 // ================= DÉMARRAGE =================
-
 window.onload = init;
-
