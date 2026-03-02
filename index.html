@@ -28,10 +28,16 @@
             <button id="upg_autospeed" onclick="BuySpeed()">
                 Méditation <br><span id="cost_speed">(100 Ki)</span>
             </button>
+            <button id="upg_tempbonus" onclick="activateTempBonus()" style="border-color:#ff2200;color:#ff4400;">
+                🔥 Kaioken ×10<br><span id="cost_temp">(200 Ki / 30s)</span>
+            </button>
         </div>
         <div class="menu-bas">
             <button id="prestigeBtn" onclick="openPrestigePanel()" style="background: linear-gradient(to bottom, #4b0082, #000); color: cyan; border: 2px solid cyan;">
                 ⚡ ÉVEIL SPIRITUEL
+            </button>
+            <button id="statsBtn" onclick="openStatsPanel()" style="background: rgba(0,40,80,0.8); color: #00ccff; border: 2px solid #0066aa;">
+                📊 Statistiques
             </button>
             <button id="musicBtn" onclick="ToggleMusic()">🔴 Musique OFF</button>
             <div style="display:inline-flex;align-items:center;gap:6px;vertical-align:middle;">
@@ -74,17 +80,24 @@
     <!-- BOUTON TOGGLE MANETTE -->
     <button id="controller-toggle" onclick="toggleController()" title="Manette Konami">🎮</button>
 
-    <!-- PANEL ADMIN -->
+    <!-- PANEL ADMIN (draggable) -->
     <div id="adminPanel" style="display:none;">
-        <h3>⛩️ Menu des Sages (Admin)</h3>
-        <button onclick="cheatKi()">+1 000 000 Ki</button>
-        <button onclick="cheatPrestige()">+1 Rang Prestige</button>
-        <button onclick="cheatMaxPrestige()">👑 Rang Maximum Instantané</button>
-        <button onclick="cheatMaxTechnique()">⚡ Techniques au Maximum</button>
-        <button onclick="cheatMaxEleves()">🥋 Dojo Complet (20 élèves)</button>
-        <button onclick="cheatMaxMeditation()">🧘 Méditation Ultime</button>
-        <button onclick="closeAdmin()">Fermer</button>
+        <div id="adminDragHandle">
+            <span>⛩️ Menu des Sages (Admin)</span>
+            <span style="font-size:0.7rem;color:#888;margin-left:8px;">[ ✥ déplacer ]</span>
+        </div>
+        <div id="adminButtons">
+            <button onclick="cheatKi()">+1 000 000 Ki</button>
+            <button onclick="cheatPrestige()">+1 Rang Prestige</button>
+            <button onclick="cheatMaxPrestige()">👑 Rang Maximum Instantané</button>
+            <button onclick="cheatMaxTechnique()">⚡ Techniques au Maximum</button>
+            <button onclick="cheatMaxEleves()">🥋 Dojo Complet (20 élèves)</button>
+            <button onclick="cheatMaxMeditation()">🧘 Méditation Ultime</button>
+            <button onclick="cheatActivateBonus()" style="color:#ff6600;border-color:#ff4400;">🔥 Activer Kaioken x10</button>
+            <button onclick="cheatResetStats()" style="color:#ffaa00;border-color:#ff8800;">📊 Reset Statistiques</button>
+            <button onclick="closeAdmin()" style="background:#300;color:#f88;border-color:#a00;">Fermer</button>
+        </div>
     </div>
     <audio id="bg_music" src="Tapion.mp3" loop></audio>
 </body>
-</html>
+</html> 
